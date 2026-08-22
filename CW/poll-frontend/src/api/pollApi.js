@@ -1,18 +1,24 @@
-// Tự động lấy URL từ Vercel Env, nếu không có sẽ tự chạy về Localhost
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://pollbuilder-gateway-r33h.onrender.com'
 const API_BASE = `${rawBaseUrl.replace(/\/$/, '')}/api`
 
 async function request(url, options = {}) {
-  // Lấy JWT Token từ localStorage
-  const token = localStorage.getItem('token') || localStorage.getItem('accessToken')
+  let token = localStorage.getItem('token') || localStorage.getItem('accessToken')
 
   const headers = {
     'Content-Type': 'application/json',
     ...(options.headers || {}),
   }
 
-  // Tự động đính kèm Token nếu có
+  // Tự động làm sạch và đính kèm Token
   if (token) {
+    // Xóa dấu ngoặc kép bọc dư thừa nếu lỡ dùng JSON.stringify khi lưu
+    token = token.replace(/^"(.*)"$/, '$1').trim()
+    
+    // Nếu token đã chứa sẵn chữ 'Bearer ' thì cắt bỏ để tránh bị lặp thành 'Bearer Bearer ...'
+    if (token.startsWith('Bearer ')) {
+      token = token.substring(7)
+    }
+
     headers['Authorization'] = `Bearer ${token}`
   }
 
