@@ -60,7 +60,8 @@ const handleLogin = async () => {
       password: password.value
     });
 
-    // Bắt Token chuẩn kể cả khi .NET trả về "Token", "token", hoặc string thuần
+    console.log('📥 Response từ server:', response.data);
+
     let jwtToken = response.data?.token || response.data?.Token || response.data?.accessToken;
     
     if (!jwtToken && typeof response.data === 'string') {
@@ -70,21 +71,22 @@ const handleLogin = async () => {
     if (jwtToken && typeof jwtToken === 'string') {
       const cleanToken = jwtToken.trim();
 
-      // 1. Lưu trực tiếp Token vào LocalStorage
       localStorage.setItem('token', cleanToken);
       
-      // 2. Cập nhật State auth toàn ứng dụng
+      // ✅ Debug: Log token vừa lưu
+      console.log('✅ Token đã lưu:', cleanToken);
+      console.log('✅ Kiểm tra localStorage:', localStorage.getItem('token'));
+      
       if (typeof login === 'function') {
         login(cleanToken);
       }
 
-      // 3. Chuyển hướng về trang chủ
       router.push('/');
     } else {
       alert('Đăng nhập thất bại: Server không trả về Token.');
     }
   } catch (error) {
-    console.error('Login Error:', error);
+    console.error('❌ Login Error:', error);
     const errRes = error.response?.data;
     const message = typeof errRes === 'string' 
       ? errRes 
@@ -95,3 +97,4 @@ const handleLogin = async () => {
   }
 };
 </script>
+
