@@ -33,7 +33,7 @@ const router = useRouter();
 const handleRegister = async () => {
   isLoading.value = true;
   try {
-    await axios.post('https://pollbuilder-accountservice1.com/api/auth/register', {
+    await axios.post('https://pollbuilder-accountservice1.onrender.com/api/auth/register', {
       email: email.value,
       password: password.value
     });
