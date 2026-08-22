@@ -26,7 +26,7 @@ const { token } = useAuth();
 
 onMounted(async () => {
   try {
-    const response = await axios.get('https://pollbuilder-gateway.onrender.com/api/polls/my-polls', {
+    const response = await axios.get('https://pollbuilder-gateway-r33h.onrender.com/api/polls/my-polls', {
       headers: { Authorization: `Bearer ${token.value}` }
     });
     polls.value = response.data;
