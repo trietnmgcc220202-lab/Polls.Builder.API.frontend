@@ -1,5 +1,5 @@
 // Tự động lấy URL từ Vercel Env, nếu không có sẽ tự chạy về Localhost
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5005'
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://pollbuilder-gateway-r33h.onrender.com'
 const API_BASE = `${rawBaseUrl.replace(/\/$/, '')}/api`
 
 async function request(url, options = {}) {
