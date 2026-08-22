@@ -1,5 +1,3 @@
-// [FRONTEND] File: src/api/pollApi.js
-
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://pollbuilder-gateway-r33h.onrender.com'
 const API_BASE = `${rawBaseUrl.replace(/\/$/, '')}/api`
 
@@ -13,17 +11,22 @@ async function request(url, options = {}) {
 
   // Tự động làm sạch và đính kèm Token
   if (token) {
+    // Xóa dấu ngoặc kép bọc dư thừa nếu lỡ dùng JSON.stringify khi lưu
     token = token.replace(/^"(.*)"$/, '$1').trim()
     
+    // Nếu token đã chứa sẵn chữ 'Bearer ' thì cắt bỏ để tránh bị lặp thành 'Bearer Bearer ...'
     if (token.startsWith('Bearer ')) {
       token = token.substring(7)
     }
 
     headers['Authorization'] = `Bearer ${token}`
-    console.log('✅ [CHECK TOKEN]: Đã gửi Header -> Authorization: Bearer ' + token.substring(0, 20) + '...')
+    console.log('🔑 Token từ localStorage:', token ? '✅ Có' : '❌ Không có')
   } else {
-    console.error('❌ [CHECK TOKEN]: KHÔNG tìm thấy Token trong LocalStorage! Request chắc chắn bị 401.')
+    console.warn('⚠️ Không tìm thấy token trong localStorage')
   }
+
+  console.log('📍 URL:', `${API_BASE}${url}`)
+  console.log('📤 Headers:', headers)
 
   const res = await fetch(`${API_BASE}${url}`, {
     ...options,
@@ -33,6 +36,7 @@ async function request(url, options = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
+    console.error('❌ Request failed:', err)
     throw new Error(err.error || `HTTP ${res.status}`)
   }
   return res.json()
@@ -64,5 +68,5 @@ export const pollApi = {
   },
   getMyPolls() {
     return request('/polls/my-polls')
-  }
+  },
 }
