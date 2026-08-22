@@ -1,91 +1,39 @@
-{
-  "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/polls",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-pollservice-98x5.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/polls",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/polls/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-pollservice-98x5.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/polls/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/votes",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-voteservice-nbjl.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/votes",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/votes/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-voteservice-nbjl.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/votes/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/auth",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-accountservice1.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/auth",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-accountservice1.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/realtime/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "pollbuilder-realtimeservice-fjhy.onrender.com",
-          "Port": 443
-        }
-      ],
-      "UpstreamPathTemplate": "/api/realtime/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-    }
-  ],
-  "GlobalConfiguration": {
-    "BaseUrl": "https://pollbuilder-gateway-r33h.onrender.com"
+<template>
+  <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2>Lịch sử Poll của tôi</h2>
+    
+    <div v-if="isLoading">Đang tải dữ liệu...</div>
+    
+    <div v-else-if="polls.length > 0">
+      <PollCard v-for="poll in polls" :key="poll.code" :poll="poll" />
+    </div>
+    
+    <div v-else>
+      <p>Bạn chưa tạo Poll nào cả.</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useAuth } from '../composables/useAuth';
+import PollCard from '../components/PollCard.vue';
+
+const polls = ref([]);
+const isLoading = ref(true);
+const { token } = useAuth();
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('https://pollbuilder-gateway.onrender.com/api/polls/my-polls', {
+      headers: { Authorization: `Bearer ${token.value}` }
+    });
+    polls.value = response.data;
+  } catch (error) {
+    alert('Không thể tải danh sách Poll. Vui lòng đăng nhập lại.');
+  } finally {
+    isLoading.value = false;
   }
-}
+});
+</script>
