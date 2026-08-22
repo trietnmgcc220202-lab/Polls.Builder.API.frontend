@@ -1,21 +1,41 @@
 <template>
-  <div style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-    <h2>Đăng nhập</h2>
+  <div style="max-width: 400px; margin: 50px auto; padding: 24px; background: #1e293b; border-radius: 12px; color: #e2e8f0; font-family: sans-serif;">
+    <h2 style="margin-bottom: 20px; text-align: center;">Đăng nhập</h2>
+    
     <form @submit.prevent="handleLogin">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Email</label>
-        <input v-model="email" type="email" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 6px;">Email</label>
+        <input 
+          v-model="email" 
+          type="email" 
+          required 
+          placeholder="user@example.com"
+          style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;" 
+        />
       </div>
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Mật khẩu</label>
-        <input v-model="password" type="password" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+      
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 6px;">Mật khẩu</label>
+        <input 
+          v-model="password" 
+          type="password" 
+          required 
+          placeholder="••••••••"
+          style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;" 
+        />
       </div>
-      <button type="submit" :disabled="isLoading" style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      
+      <button 
+        type="submit" 
+        :disabled="isLoading" 
+        style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;"
+      >
         {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập' }}
       </button>
     </form>
-    <p style="margin-top: 15px; text-align: center;">
-      Chưa có tài khoản? <router-link to="/register">Đăng ký ngay</router-link>
+    
+    <p style="margin-top: 16px; text-align: center; color: #94a3b8;">
+      Chưa có tài khoản? <router-link to="/register" style="color: #38bdf8;">Đăng ký ngay</router-link>
     </p>
   </div>
 </template>
@@ -40,26 +60,35 @@ const handleLogin = async () => {
       password: password.value
     });
 
-    // 1. Trích xuất token an toàn theo mọi kiểu response từ Backend
-    const jwtToken = response.data?.token || response.data?.accessToken || response.data;
+    // Bắt Token chuẩn kể cả khi .NET trả về "Token", "token", hoặc string thuần
+    let jwtToken = response.data?.token || response.data?.Token || response.data?.accessToken;
+    
+    if (!jwtToken && typeof response.data === 'string') {
+      jwtToken = response.data;
+    }
 
     if (jwtToken && typeof jwtToken === 'string') {
-      // 2. Lưu trực tiếp vào localStorage & gọi hàm login của composable
-      localStorage.setItem('token', jwtToken);
+      const cleanToken = jwtToken.trim();
+
+      // 1. Lưu trực tiếp Token vào LocalStorage
+      localStorage.setItem('token', cleanToken);
+      
+      // 2. Cập nhật State auth toàn ứng dụng
       if (typeof login === 'function') {
-        login(jwtToken);
+        login(cleanToken);
       }
 
-      // 3. Chuyển hướng sang MyPolls
-      router.push('/my-polls');
+      // 3. Chuyển hướng về trang chủ
+      router.push('/');
     } else {
-      alert('Đăng nhập không thành công: Server không trả về Token.');
+      alert('Đăng nhập thất bại: Server không trả về Token.');
     }
   } catch (error) {
     console.error('Login Error:', error);
-    // 4. Xử lý thông báo lỗi tránh bị [object Object]
     const errRes = error.response?.data;
-    const message = typeof errRes === 'string' ? errRes : (errRes?.message || 'Đăng nhập thất bại. Kiểm tra lại thông tin.');
+    const message = typeof errRes === 'string' 
+      ? errRes 
+      : (errRes?.message || errRes?.error || 'Đăng nhập thất bại. Kiểm tra lại thông tin.');
     alert(message);
   } finally {
     isLoading.value = false;
