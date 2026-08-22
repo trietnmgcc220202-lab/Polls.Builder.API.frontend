@@ -35,19 +35,32 @@ const { login } = useAuth();
 const handleLogin = async () => {
   isLoading.value = true;
   try {
-    // Lưu ý: Đổi URL gateway cho phù hợp nếu chạy thực tế
     const response = await axios.post('https://pollbuilder-gateway-r33h.onrender.com/api/auth/login', {
       email: email.value,
       password: password.value
     });
-    
-    // Lưu token vào local storage thông qua hàm login của composable
-    login(response.data.token);
-    
-    // Đăng nhập thành công thì chuyển về trang danh sách poll của tôi
-    router.push('/my-polls');
+
+    // 1. Trích xuất token an toàn theo mọi kiểu response từ Backend
+    const jwtToken = response.data?.token || response.data?.accessToken || response.data;
+
+    if (jwtToken && typeof jwtToken === 'string') {
+      // 2. Lưu trực tiếp vào localStorage & gọi hàm login của composable
+      localStorage.setItem('token', jwtToken);
+      if (typeof login === 'function') {
+        login(jwtToken);
+      }
+
+      // 3. Chuyển hướng sang MyPolls
+      router.push('/my-polls');
+    } else {
+      alert('Đăng nhập không thành công: Server không trả về Token.');
+    }
   } catch (error) {
-    alert(error.response?.data || 'Đăng nhập thất bại. Kiểm tra lại thông tin.');
+    console.error('Login Error:', error);
+    // 4. Xử lý thông báo lỗi tránh bị [object Object]
+    const errRes = error.response?.data;
+    const message = typeof errRes === 'string' ? errRes : (errRes?.message || 'Đăng nhập thất bại. Kiểm tra lại thông tin.');
+    alert(message);
   } finally {
     isLoading.value = false;
   }
