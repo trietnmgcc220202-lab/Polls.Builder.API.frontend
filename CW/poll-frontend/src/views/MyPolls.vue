@@ -27,7 +27,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { pollApi } from '../services/pollApi';
+import { pollApi } from '../api/pollApi';
 import PollCard from '../components/PollCard.vue';
 
 const polls = ref([]);
