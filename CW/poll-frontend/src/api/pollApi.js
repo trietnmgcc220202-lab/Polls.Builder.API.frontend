@@ -20,20 +20,19 @@ async function request(url, options = {}) {
     }
 
     headers['Authorization'] = `Bearer ${token}`
-    console.log('✅ [CHECK TOKEN]: Đã gửi Header -> Authorization: Bearer ' + token.substring(0, 20) + '...')
   } else {
-    console.error('❌ [CHECK TOKEN]: KHÔNG tìm thấy Token trong LocalStorage! Request chắc chắn bị 401.')
+    console.warn('⚠️ [CHECK TOKEN]: Không tìm thấy Token trong LocalStorage.')
   }
 
   const res = await fetch(`${API_BASE}${url}`, {
     ...options,
     headers,
-    credentials: 'include',
+    // Đã bỏ 'credentials: include' để tránh bị trình duyệt chặn CORS Preflight
   })
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err.error || `HTTP ${res.status}`)
+    throw new Error(err.message || err.error || `Lỗi HTTP ${res.status}`)
   }
   return res.json()
 }
@@ -42,7 +41,11 @@ export const pollApi = {
   create(question, options) {
     return request('/polls', {
       method: 'POST',
-      body: JSON.stringify({ question, options }),
+      body: JSON.stringify({ 
+        title: question,    // C# Backend thường đặt tên thuộc tính DTO là Title
+        question: question, // Gửi kèm cả 2 trường để khớp 100% với DTO Backend
+        options 
+      }),
     })
   },
   get(code) {
