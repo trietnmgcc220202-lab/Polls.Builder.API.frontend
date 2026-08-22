@@ -33,9 +33,9 @@ export const pollApi = {
     return request(`/polls/${code}/results`)
   },
   vote(code, optionIndex) {
-    return request(`/polls/${code}/vote`, {
+    return request('/votes', {
       method: 'POST',
-      body: JSON.stringify({ optionIndex }),
+      body: JSON.stringify({ pollCode: code, optionIndex }),
     })
   },
   close(code) {
