@@ -1,4 +1,4 @@
-{
+`{
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/polls",
@@ -10,7 +10,14 @@
         }
       ],
       "UpstreamPathTemplate": "/api/polls",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/polls/{everything}",
@@ -22,8 +29,16 @@
         }
       ],
       "UpstreamPathTemplate": "/api/polls/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     },
+
     {
       "DownstreamPathTemplate": "/api/votes",
       "DownstreamScheme": "https",
@@ -34,7 +49,14 @@
         }
       ],
       "UpstreamPathTemplate": "/api/votes",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/votes/{everything}",
@@ -46,7 +68,14 @@
         }
       ],
       "UpstreamPathTemplate": "/api/votes/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     },
 
     {
@@ -59,7 +88,14 @@
         }
       ],
       "UpstreamPathTemplate": "/api/auth",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
@@ -71,9 +107,17 @@
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
     }
   ],
+
   "GlobalConfiguration": {
     "BaseUrl": "https://pollbuilder-gateway-r33h.onrender.com"
   }
