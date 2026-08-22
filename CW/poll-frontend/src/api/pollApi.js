@@ -1,3 +1,5 @@
+// [FRONTEND] File: src/api/pollApi.js
+
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://pollbuilder-gateway-r33h.onrender.com'
 const API_BASE = `${rawBaseUrl.replace(/\/$/, '')}/api`
 
@@ -11,15 +13,16 @@ async function request(url, options = {}) {
 
   // Tự động làm sạch và đính kèm Token
   if (token) {
-    // Xóa dấu ngoặc kép bọc dư thừa nếu lỡ dùng JSON.stringify khi lưu
     token = token.replace(/^"(.*)"$/, '$1').trim()
     
-    // Nếu token đã chứa sẵn chữ 'Bearer ' thì cắt bỏ để tránh bị lặp thành 'Bearer Bearer ...'
     if (token.startsWith('Bearer ')) {
       token = token.substring(7)
     }
 
     headers['Authorization'] = `Bearer ${token}`
+    console.log('✅ [CHECK TOKEN]: Đã gửi Header -> Authorization: Bearer ' + token.substring(0, 20) + '...')
+  } else {
+    console.error('❌ [CHECK TOKEN]: KHÔNG tìm thấy Token trong LocalStorage! Request chắc chắn bị 401.')
   }
 
   const res = await fetch(`${API_BASE}${url}`, {
@@ -59,4 +62,7 @@ export const pollApi = {
       method: 'PATCH',
     })
   },
+  getMyPolls() {
+    return request('/polls/my-polls')
+  }
 }
